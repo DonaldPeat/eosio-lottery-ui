@@ -25,7 +25,6 @@ export const login = async function(
       localStorage.setItem("account", accountName);
       localStorage.setItem("returning", true);
       dispatch("getLotteryPool");
-      // dispatch("getTimeRemaining");
     }
   } catch (e) {
     const error =
@@ -87,26 +86,10 @@ export const getLotteryPool = async function({ commit }) {
         table: "balance"
       });
     const funds = lotteryFunds.rows[0].funds;
-    debugger;
     commit("setPool", funds);
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
-};
-
-export const getTimeRemaining = async function({ commit }) {
-  try {
-    const lotteryFunds = await this.$api.getTableRows({
-      code: "tester555555",
-      scope: "tester555555",
-      table: "lotteries"
-    });
-  const time = lotteryFunds.rows[0].end_lottery;
-  debugger;
-  commit("setTime", time);
-} catch (error) {
-  commit("general/setErrorMsg", error.message || error, { root: true });
-}
 };
 
 export const getAccountProfile = async function({ commit, dispatch }) {

@@ -11,7 +11,6 @@ export const setAutoLogin = (state, status) => {
 };
 
 export const setPool = (state, pool = undefined) => {
-  debugger;
   if (!pool) {
     pool = "0.0000 TLOS";
   }
@@ -19,7 +18,6 @@ export const setPool = (state, pool = undefined) => {
 };
 
 export const setTime = (state, time = undefined) => {
-  debugger;
   if (!time) {
     time = 0;
   }

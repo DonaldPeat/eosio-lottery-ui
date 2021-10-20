@@ -1,9 +1,10 @@
 <template>
   <q-page class="column justify-center items-center">
-    <h2>Telos Lottery</h2>
-    <h2>Current Pool: {{pool}}</h2>
-    <h2>Time Remaining: {{countDown}}</h2>
-    <h3>test contract: tester555555</h3>
+    <h2>Telos Lottery (testnet)</h2>
+    <h2>CURRENT POOL: {{ pool }}</h2>
+    <h3>TIME REMAINING: {{ countDown }}</h3>
+    <h3>{{ winnerString }}</h3>
+    <q-btn v-if="showRevealButton" label="Click To Reveal Winner!" color="primary" class="reveal-button" @click='endLottery'></q-btn>
     <div v-if="isAuthenticated">
       <q-input
         outlined
@@ -40,7 +41,7 @@
         </q-card>
       </q-dialog>
     </div>
-    <div v-else>Please login to do a transfer!</div>
+    <div v-else>Please login to enter!</div>
   </q-page>
 </template>
 
@@ -56,11 +57,12 @@ export default {
       showTransaction: null,
       transaction: null,
       explorerUrl: process.env.NETWORK_EXPLORER,
-      timeLeft: ""
+      timeLeft: "",
+      winnerString:"",
+      showRevealButton: false
     };
   },
   mounted() {
-    debugger;
     let endTime = this.getTimeRemaining();
   },
   computed: {
@@ -97,12 +99,10 @@ export default {
         this.showTransaction = true;
         this.transaction = transaction.transactionId;
       }
-      debugger;
       await this.getLotteryPool();
     },
 
     async getTimeRemaining() {
-      debugger;
       try {
         const lotteryFunds = await this.$store.$api.getTableRows({
           code: "tester555555",
@@ -114,7 +114,6 @@ export default {
         if (timeLeft < 0){
           timeLeft = 0;
         }
-        debugger;
         this.startTimer(timeLeft);
       } catch(e) {
         console.error(e);
@@ -131,12 +130,46 @@ export default {
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
         this.timeLeft = `${minutes}:${seconds}`;
-        // if (--timer < 0) {
+
+        if (this.timeLeft === '00:00'){
+          this.showRevealButton = true;
+        }
+
         if (--timer < 0) {
             timer = 0;
+            return;
         }
       }, 1000);
+    },
+    async endLottery(){
+      this.showRevealButton = false;
+      debugger;
+      const actions = [
+        {
+          account: "tester555555",
+          name: "endlotto",
+          data: {}
+        }
+      ];
+      const transaction = await this.$store.$api.signTransaction(actions);
+      debugger;
+      if (transaction) {
+        this.showTransaction = true;
+        this.transaction = transaction.transactionId;
+      };
+      this.showRevealButton = false;
+      this.getTimeRemaining();
     }
   }
 }
 </script>
+<style scoped>
+.reveal-button{
+
+margin-bottom:2rem;
+
+}
+
+
+
+</style>
