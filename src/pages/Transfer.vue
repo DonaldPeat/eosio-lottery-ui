@@ -2,9 +2,8 @@
   <q-page class="column justify-center items-center">
     <h2>Telos Lottery (testnet)</h2>
     <h2>CURRENT POOL: {{ pool }}</h2>
-    <h3>TIME REMAINING: {{ countDown }}</h3>
-    <h3>{{ winnerString }}</h3>
-    <q-btn v-if="showRevealButton" label="Click To Reveal Winner!" color="primary" class="reveal-button" @click='endLottery'></q-btn>
+    <h3>TIME REMAINING: {{ timeLeft }}</h3>
+   
     <div v-if="isAuthenticated">
       <q-input
         outlined
@@ -17,8 +16,9 @@
         type="number"
         maxlength="12"
       >
-      </q-input>
       <q-btn size="xl" round dense flat icon="send" @click="send" />
+
+      </q-input>
       <q-dialog v-model="showTransaction" confirm>
         <q-card >
           <q-card-section class="row">
@@ -42,7 +42,10 @@
       </q-dialog>
     </div>
     <div v-else>Please login to enter!</div>
+    <q-btn class='link'><a style="text-decoration: none;" href="https://telos-test.bloks.io/account/tester555555">VIEW CONTRACT TRANSACTIONS</a></q-btn> 
+    <q-btn v-if="showRevealButton" label="Start Another Lottery  " color="primary" class="reveal-button" @click='endLottery'></q-btn> 
   </q-page>
+ 
 </template>
 
 <script>
@@ -111,9 +114,13 @@ export default {
         });
         const time = lotteryFunds.rows[0].end_lottery;
         let timeLeft = time - (Date.now() / 1000);
-        if (timeLeft < 0){
-          timeLeft = 0;
+
+        if (timeLeft <= 0 && this.isAuthenticated){
+          this.showRevealButton = true;
+          this.timeLeft = "00:00";
+          return;
         }
+
         this.startTimer(timeLeft);
       } catch(e) {
         console.error(e);
@@ -122,7 +129,7 @@ export default {
     },
     startTimer(duration) {
       let timer = duration, minutes, seconds;
-      setInterval(() => {
+      let countdown = setInterval(() => {
         minutes = parseInt(timer / 60, 10)
         seconds = parseInt(timer % 60, 10);
 
@@ -131,19 +138,14 @@ export default {
 
         this.timeLeft = `${minutes}:${seconds}`;
 
-        if (this.timeLeft === '00:00'){
-          this.showRevealButton = true;
-        }
-
         if (--timer < 0) {
-            timer = 0;
-            return;
+          clearInterval(countdown);
+          this.showRevealButton = true;
         }
       }, 1000);
     },
     async endLottery(){
       this.showRevealButton = false;
-      debugger;
       const actions = [
         {
           account: "tester555555",
@@ -152,7 +154,6 @@ export default {
         }
       ];
       const transaction = await this.$store.$api.signTransaction(actions);
-      debugger;
       if (transaction) {
         this.showTransaction = true;
         this.transaction = transaction.transactionId;
@@ -165,11 +166,7 @@ export default {
 </script>
 <style scoped>
 .reveal-button{
-
-margin-bottom:2rem;
-
+   margin-bottom:2rem;
+   margin-top:1rem !important;
 }
-
-
-
 </style>
