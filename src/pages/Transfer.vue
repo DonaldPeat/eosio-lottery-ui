@@ -120,12 +120,9 @@ export default {
           this.timeLeft = "00:00";
           return;
         }
-
         this.countdown(timeLeft);
-        debugger;
       } catch(e) {
         console.error(e);
-    
       }
     },
     countdown(seconds) {
