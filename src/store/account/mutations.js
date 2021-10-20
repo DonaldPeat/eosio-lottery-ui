@@ -10,9 +10,19 @@ export const setAutoLogin = (state, status) => {
   state.autoLogin = status;
 };
 
-export const setProfile = (state, profile = undefined) => {
-  if (!profile) {
-    return;
+export const setPool = (state, pool = undefined) => {
+  debugger;
+  if (!pool) {
+    pool = "0.0000 TLOS";
   }
-  state.profiles[profile.account_name] = profile;
+  state.pool = pool;
 };
+
+export const setTime = (state, time = undefined) => {
+  debugger;
+  if (!time) {
+    time = 0;
+  }
+  state.time = time;
+};
+

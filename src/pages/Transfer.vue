@@ -1,34 +1,22 @@
 <template>
   <q-page class="column justify-center items-center">
-    <h2>Send some TLOS!</h2>
+    <h2>Telos Lottery</h2>
+    <h2>Current Pool: {{pool}}</h2>
+    <h2>Time Remaining: {{countDown}}</h2>
+    <h3>test contract: tester555555</h3>
     <div v-if="isAuthenticated">
-      <q-input
-        outlined
-        autocapitalize="off"
-        bottom-slots
-        v-model="to"
-        label="To"
-        counter
-        maxlength="12"
-      />
       <q-input
         outlined
         bottom-slots
         suffix="TLOS"
         v-model="amount"
         label="Amount"
+        step='1'
         counter
         type="number"
         maxlength="12"
       >
       </q-input>
-      <q-input
-        outlined
-        bottom-slots
-        v-model="memo"
-        label="Memo"
-        counter
-      />
       <q-btn size="xl" round dense flat icon="send" @click="send" />
       <q-dialog v-model="showTransaction" confirm>
         <q-card >
@@ -62,19 +50,27 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   data() {
     return {
-      to: null,
+      to: "tester555555",
       amount: null,
-      memo: null,
+      memo: "lottery",
       showTransaction: null,
       transaction: null,
-      explorerUrl: process.env.NETWORK_EXPLORER
+      explorerUrl: process.env.NETWORK_EXPLORER,
+      timeLeft: ""
     };
   },
+  mounted() {
+    debugger;
+    let endTime = this.getTimeRemaining();
+  },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName"])
+    ...mapGetters("account", ["isAuthenticated", "accountName", "pool", "time"]),
+    countDown(){
+      return this.timeLeft;
+    }
   },
   methods: {
-    ...mapActions("account", ["accountExists"]),
+    ...mapActions("account", ["accountExists", "getLotteryPool", "get"]),
     async send() {
       if (!(await this.accountExists(this.to))) {
         this.$q.notify({
@@ -101,7 +97,46 @@ export default {
         this.showTransaction = true;
         this.transaction = transaction.transactionId;
       }
+      debugger;
+      await this.getLotteryPool();
+    },
+
+    async getTimeRemaining() {
+      debugger;
+      try {
+        const lotteryFunds = await this.$store.$api.getTableRows({
+          code: "tester555555",
+          scope: "tester555555",
+          table: "lotteries"
+        });
+        const time = lotteryFunds.rows[0].end_lottery;
+        let timeLeft = time - (Date.now() / 1000);
+        if (timeLeft < 0){
+          timeLeft = 0;
+        }
+        debugger;
+        this.startTimer(timeLeft);
+      } catch(e) {
+        console.error(e);
+    
+      }
+    },
+    startTimer(duration) {
+      let timer = duration, minutes, seconds;
+      setInterval(() => {
+        minutes = parseInt(timer / 60, 10)
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        this.timeLeft = `${minutes}:${seconds}`;
+        // if (--timer < 0) {
+        if (--timer < 0) {
+            timer = 0;
+        }
+      }, 1000);
     }
   }
-};
+}
 </script>

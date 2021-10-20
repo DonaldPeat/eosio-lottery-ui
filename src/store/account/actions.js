@@ -24,7 +24,8 @@ export const login = async function(
       localStorage.setItem("autoLogin", authenticator.constructor.name);
       localStorage.setItem("account", accountName);
       localStorage.setItem("returning", true);
-      dispatch("getAccountProfile");
+      dispatch("getLotteryPool");
+      // dispatch("getTimeRemaining");
     }
   } catch (e) {
     const error =
@@ -78,35 +79,40 @@ export const logout = async function({ commit }) {
   }
 };
 
-export const getUserProfile = async function({ commit }, accountName) {
-  try {
-    const profileResult = await this.$api.getTableRows({
-      code: "profiles",
-      scope: "profiles",
-      table: "profiles",
-      limit: 1,
-      index_position: 1,
-      key_type: "i64",
-      lower_bound: accountName,
-      upper_bound: accountName
-    });
-
-    const profile = profileResult.rows[0];
-    commit("setProfile", profile);
+export const getLotteryPool = async function({ commit }) {
+    try {
+      const lotteryFunds = await this.$api.getTableRows({
+        code: "tester555555",
+        scope: "tester555555",
+        table: "balance"
+      });
+    const funds = lotteryFunds.rows[0].funds;
+    debugger;
+    commit("setPool", funds);
   } catch (error) {
     commit("general/setErrorMsg", error.message || error, { root: true });
   }
+};
+
+export const getTimeRemaining = async function({ commit }) {
+  try {
+    const lotteryFunds = await this.$api.getTableRows({
+      code: "tester555555",
+      scope: "tester555555",
+      table: "lotteries"
+    });
+  const time = lotteryFunds.rows[0].end_lottery;
+  debugger;
+  commit("setTime", time);
+} catch (error) {
+  commit("general/setErrorMsg", error.message || error, { root: true });
+}
 };
 
 export const getAccountProfile = async function({ commit, dispatch }) {
   if (!this.state.account.accountName) {
     return;
   }
-
-  dispatch(
-    "getUserProfile",
-    this.state.account.accountName
-  );
 };
 
 export const accountExists = async function ({ commit, dispatch }, accountName) {

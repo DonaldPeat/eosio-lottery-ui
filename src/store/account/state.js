@@ -2,7 +2,7 @@ export default function() {
   return {
     accountName: null,
     hasProfile: false,
-    profiles: {},
+    pool: "0.0000 TLOS",
     autoLogin: false,
     loading: {}
   };
