@@ -66,10 +66,10 @@ export default {
     };
   },
   mounted() {
-    let endTime = this.getTimeRemaining();
+    this.getTimeRemaining();
   },
   computed: {
-    ...mapGetters("account", ["isAuthenticated", "accountName", "pool", "time"]),
+    ...mapGetters("account", ["isAuthenticated", "accountName", "pool"]),
     countDown(){
       return this.timeLeft;
     }
@@ -113,7 +113,7 @@ export default {
           table: "lotteries"
         });
         const time = lotteryFunds.rows[0].end_lottery;
-        let timeLeft = time - (Date.now() / 1000);
+        let timeLeft = Number.parseFloat(time - (Date.now() / 1000)).toFixed(0);
 
         if (timeLeft <= 0 && this.isAuthenticated){
           this.showRevealButton = true;
@@ -121,25 +121,28 @@ export default {
           return;
         }
 
-        this.startTimer(timeLeft);
+        this.countdown(timeLeft);
+        debugger;
       } catch(e) {
         console.error(e);
     
       }
     },
-    startTimer(duration) {
-      let timer = duration, minutes, seconds;
-      let countdown = setInterval(() => {
-        minutes = parseInt(timer / 60, 10)
-        seconds = parseInt(timer % 60, 10);
+    countdown(seconds) {
+      let counter = seconds;
+      const interval = setInterval(() => {
 
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
+        let minutes = Math.floor(counter / 60);
+        let seconds = counter % 60;
 
-        this.timeLeft = `${minutes}:${seconds}`;
+        let tempMin = minutes < 10 ? `0${minutes}`: `${minutes}:`;
+        let tempSec = seconds < 10 ? `0${seconds}`: `${seconds}`;
 
-        if (--timer < 0) {
-          clearInterval(countdown);
+        this.timeLeft = `${tempMin}:${tempSec}`;
+        counter--;
+      
+        if (counter < 0 ) {
+          clearInterval(interval);
           this.showRevealButton = true;
         }
       }, 1000);
