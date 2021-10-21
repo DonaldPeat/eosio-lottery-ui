@@ -170,4 +170,10 @@ export default {
    margin-bottom:2rem;
    margin-top:1rem !important;
 }
+@media only screen and (max-width: 576px) {
+  h2, h3 {
+    font-weight: 600;
+    font-size: 1.5rem;
+  }
+}
 </style>
