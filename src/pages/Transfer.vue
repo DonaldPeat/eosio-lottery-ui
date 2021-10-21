@@ -67,7 +67,7 @@ export default {
   },
   mounted() {
     this.getTimeRemaining();
-    // if (!this.isAuthenticated || this.timeLeft)
+    this.getLotteryPool();
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "pool"]),
@@ -119,6 +119,7 @@ export default {
         if (timeLeft <= 0 && this.isAuthenticated){
           this.showRevealButton = true;
           this.timeLeft = "00:00";
+          this.getLotteryPool();
           return;
         }
         this.countdown(timeLeft);
