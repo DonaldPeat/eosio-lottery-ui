@@ -133,7 +133,7 @@ export default {
         let minutes = Math.floor(counter / 60);
         let seconds = counter % 60;
 
-        let tempMin = minutes < 10 ? `0${minutes}`: `${minutes}:`;
+        let tempMin = minutes < 10 ? `0${minutes}`: `${minutes}`;
         let tempSec = seconds < 10 ? `0${seconds}`: `${seconds}`;
 
         this.timeLeft = `${tempMin}:${tempSec}`;
