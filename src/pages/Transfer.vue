@@ -119,7 +119,7 @@ export default {
         if (timeLeft <= 0 && this.isAuthenticated){
           this.showRevealButton = true;
           this.timeLeft = "00:00";
-          this.getLotteryPool();
+          await this.getLotteryPool();
           return;
         }
         this.countdown(timeLeft);
@@ -161,7 +161,8 @@ export default {
         this.transaction = transaction.transactionId;
       };
       this.showRevealButton = false;
-      this.getTimeRemaining();
+      await this.getTimeRemaining();
+      await this.getLotteryPool();
     }
   }
 }
