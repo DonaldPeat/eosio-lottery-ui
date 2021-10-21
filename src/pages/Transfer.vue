@@ -43,7 +43,7 @@
     </div>
     <div v-else>Please login to enter!</div>
     <q-btn class='link'><a style="text-decoration: none;" href="https://telos-test.bloks.io/account/tester555555">VIEW CONTRACT TRANSACTIONS</a></q-btn> 
-    <q-btn v-if="showRevealButton" label="Start Another Lottery  " color="primary" class="reveal-button" @click='endLottery'></q-btn> 
+    <q-btn label="Start Another Lottery  " color="primary" class="reveal-button" @click='endLottery' :disable='!isAuthenticated || !showRevealButton'></q-btn> 
   </q-page>
  
 </template>
@@ -67,6 +67,7 @@ export default {
   },
   mounted() {
     this.getTimeRemaining();
+    // if (!this.isAuthenticated || this.timeLeft)
   },
   computed: {
     ...mapGetters("account", ["isAuthenticated", "accountName", "pool"]),
